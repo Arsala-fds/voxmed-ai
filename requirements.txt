@@ -1,0 +1,24 @@
+# --- Web app / UI ---
+streamlit==1.38.0
+
+# --- LLM (Claude) ---
+anthropic==0.34.2
+
+# --- Voice: Speech-to-Text ---
+faster-whisper
+audio-recorder-streamlit==0.0.10
+
+# --- Voice: Text-to-Speech ---
+gTTS==2.5.3
+
+# --- RAG: embeddings + vector store ---
+sentence-transformers==3.0.1
+chromadb==0.5.5
+
+# --- Backend (added when we build backend/main.py) ---
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# --- Utilities ---
+python-dotenv==1.0.1
+pypdf==4.3.1
