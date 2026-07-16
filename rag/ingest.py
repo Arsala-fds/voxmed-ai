@@ -8,6 +8,7 @@ Run this once (or whenever /data changes) with:
 """
 
 import os
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 import glob
 import chromadb
 from chromadb.utils import embedding_functions
