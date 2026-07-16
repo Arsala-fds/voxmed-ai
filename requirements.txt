@@ -2,7 +2,7 @@
 streamlit==1.38.0
 
 # --- LLM (Claude) ---
-anthropic==0.34.2
+anthropic
 
 # --- Voice: Speech-to-Text ---
 faster-whisper
@@ -24,3 +24,5 @@ python-dotenv==1.0.1
 pypdf==4.3.1
 
 requests==2.32.3
+
+groq
