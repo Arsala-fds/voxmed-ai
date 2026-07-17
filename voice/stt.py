@@ -8,8 +8,9 @@ import tempfile
 import os
 from faster_whisper import WhisperModel
 
-# "base" is a good balance of speed vs accuracy for a laptop.
-# First run downloads the model (~150MB); it's cached after that.
+# "small" gives noticeably better accuracy than "base", still runs
+# reasonably fast on a laptop CPU. First run downloads the model
+# (~500MB for "small"); it's cached after that.
 _model = None
 
 
@@ -17,7 +18,7 @@ def get_model():
     """Load the Whisper model once and reuse it (loading is slow, so we cache it)."""
     global _model
     if _model is None:
-        _model = WhisperModel("base", device="cpu", compute_type="int8")
+        _model = WhisperModel("small", device="cpu", compute_type="int8")
     return _model
 
 
@@ -28,17 +29,21 @@ def transcribe_audio(audio_bytes: bytes) -> str:
     """
     model = get_model()
 
-    # Whisper needs a file path, so we write the bytes to a temp .wav file
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
         tmp.write(audio_bytes)
         tmp_path = tmp.name
 
     try:
-        segments, info = model.transcribe(tmp_path)
+        segments, info = model.transcribe(
+            tmp_path,
+            language="en",       # skip auto-detection, we know it's English
+            vad_filter=True,     # strips silence/noise before transcribing
+            beam_size=5,         # slightly more thorough search for best transcription
+        )
         text = " ".join(segment.text for segment in segments)
         return text.strip()
     finally:
-        os.remove(tmp_path)  # clean up the temp file either way
+        os.remove(tmp_path)
 
 
 if __name__ == "__main__":
