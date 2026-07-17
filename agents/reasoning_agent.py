@@ -22,7 +22,7 @@ doctor for serious concerns."""
 def get_client():
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        raise ValueError("GROQ_API_KEY not found. Check your .env file.")
+        raise ValueError("GROQ_API_KEY not found. Check your .env file or Streamlit secrets.")
     return Groq(api_key=api_key)
 
 
