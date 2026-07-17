@@ -9,6 +9,8 @@ Ask a medical question by speaking. VoxMed_AI transcribes it, retrieves verified
 
 ---
 
+🔗 **[Try the live demo](https://voxmed-ai-6xcqes9sdj5js97usougza.streamlit.app)**
+
 ## Why VoxMed_AI
 
 Most AI chatbots answer medical questions from unverified internal knowledge, which can hallucinate. VoxMed_AI is built to **never do that** — every answer is generated strictly from retrieved, verified source documents (MedlinePlus and curated first-aid references), with source citations shown for every response. A dedicated Safety Agent also screens every query for emergency indicators before responding.
