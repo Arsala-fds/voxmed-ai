@@ -27,6 +27,7 @@ def run_pipeline(user_query: str) -> dict:
         "answer": final_result["final_answer"],
         "sources": final_result["sources"],
         "is_emergency": final_result["is_emergency"],
+        "answer_type": final_result.get("answer_type", "verified"),
     }
 
 

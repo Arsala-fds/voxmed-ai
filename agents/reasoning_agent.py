@@ -1,7 +1,8 @@
 """
 VoxMed_AI - Reasoning Agent
-Takes the retrieved context and generates a grounded, spoken-friendly
-answer using Groq (free tier LLM). Answers ONLY from the provided context.
+Generates a grounded answer when relevant context is retrieved.
+Falls back to the LLM's general medical knowledge (clearly labeled)
+when no relevant document is found, always including a safety reminder.
 """
 
 import os
@@ -10,13 +11,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SYSTEM_PROMPT = """You are VoxMed, a careful medical information assistant.
+DISTANCE_THRESHOLD = 1.0  # above this, retrieved context is considered irrelevant
+
+GROUNDED_SYSTEM_PROMPT = """You are VoxMed, a careful medical information assistant.
 Answer ONLY using the provided context below. If the context does not
-contain the answer, say clearly that you don't have that information and
-recommend consulting a healthcare professional. Never invent facts.
-Keep answers short and speakable (2-4 sentences), since they will be
-read aloud to the user. Always end with a brief reminder to consult a
-doctor for serious concerns."""
+contain the answer, say clearly that you don't have that information.
+Never invent facts. Keep answers short and speakable (2-4 sentences),
+since they will be read aloud. Always end with a brief reminder to
+consult a doctor for serious concerns."""
+
+GENERAL_KNOWLEDGE_SYSTEM_PROMPT = """You are VoxMed, a medical information
+assistant. No verified reference document was found for this question, so
+answer using your own general medical knowledge instead. Keep the answer
+short, speakable (2-4 sentences), and clearly factual/well-established
+information only - do not speculate on rare or uncertain details.
+ALWAYS start your answer with "Based on general medical knowledge (not a
+verified source):" and ALWAYS end with: "If this is urgent or severe,
+please call your local emergency number or see a doctor right away.\""""
 
 
 def get_client():
@@ -27,19 +38,36 @@ def get_client():
 
 
 def generate_answer(retrieval_result: dict) -> dict:
+    """
+    Takes the Retrieval Agent's output dict, generates an answer, and
+    tags it as 'verified' (grounded in retrieved docs) or 'general'
+    (LLM's own knowledge, used only when no relevant doc was found).
+    """
     client = get_client()
 
     query = retrieval_result["cleaned_query"]
     chunks = retrieval_result["retrieved_chunks"]
-    context_text = "\n\n---\n\n".join(chunks)
+    top_distance = retrieval_result.get("top_match_distance")
 
-    user_message = f"Context:\n{context_text}\n\nQuestion: {query}"
+    has_relevant_context = (
+        chunks and top_distance is not None and top_distance <= DISTANCE_THRESHOLD
+    )
+
+    if has_relevant_context:
+        context_text = "\n\n---\n\n".join(chunks)
+        user_message = f"Context:\n{context_text}\n\nQuestion: {query}"
+        system_prompt = GROUNDED_SYSTEM_PROMPT
+        answer_type = "verified"
+    else:
+        user_message = f"Question: {query}"
+        system_prompt = GENERAL_KNOWLEDGE_SYSTEM_PROMPT
+        answer_type = "general"
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         max_tokens=300,
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
     )
@@ -49,6 +77,7 @@ def generate_answer(retrieval_result: dict) -> dict:
     return {
         **retrieval_result,
         "answer": answer,
+        "answer_type": answer_type,  # "verified" or "general"
     }
 
 
@@ -62,6 +91,7 @@ if __name__ == "__main__":
     final_result = generate_answer(retrieval_result)
 
     print("Query:", final_result["cleaned_query"])
+    print("Answer type:", final_result["answer_type"])
     print("Sources:", final_result["sources"])
     print("\nAnswer:")
     print(final_result["answer"])

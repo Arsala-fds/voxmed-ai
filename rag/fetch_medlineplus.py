@@ -11,16 +11,20 @@ DATA_DIR = "data"
 BASE_URL = "https://wsearch.nlm.nih.gov/ws/query"
 
 TOPICS = [
-    "first aid",
-    "burns",
-    "fever",
-    "choking",
-    "sprains and strains",
-    "nosebleeds",
-    "allergic reaction",
-    "wounds and injuries",
-    "poisoning",
-    "heat exhaustion",
+    "first aid", "burns", "fever", "choking", "sprains and strains",
+    "nosebleeds", "allergic reaction", "wounds and injuries", "poisoning",
+    "heat exhaustion", "diabetes", "high blood pressure", "asthma",
+    "migraine", "urinary tract infections", "kidney stones", "heart attack",
+    "stroke", "pneumonia", "bronchitis", "gastritis", "food poisoning",
+    "dehydration", "dengue fever", "malaria", "typhoid fever", "covid 19",
+    "flu", "common cold", "tuberculosis", "anemia", "thyroid diseases",
+    "arthritis", "back pain", "depression", "anxiety", "insomnia",
+    "constipation", "diarrhea", "vomiting", "headache", "dizziness",
+    "high cholesterol", "obesity", "skin rash", "eczema", "acne",
+    "conjunctivitis", "ear infections", "sinusitis", "tonsillitis",
+    "appendicitis", "gallstones", "hemorrhoids", "varicose veins",
+    "osteoporosis", "seizures", "chickenpox", "measles", "pink eye",
+    "sore throat", "abdominal pain", "chest pain",
 ]
 
 
