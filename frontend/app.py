@@ -1,9 +1,11 @@
 """
-VoxMed_AI - Premium SaaS UI
+VoxMed_AI - Premium SaaS UI v2 (chat history, refined spacing, hierarchy)
+Backend/agent logic untouched - UI layer only.
 """
 
 import sys
 import os
+import hashlib
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "voice"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "agents"))
@@ -18,117 +20,71 @@ from orchestrator import run_pipeline
 st.set_page_config(page_title="VoxMed AI", page_icon="🩺", layout="centered")
 
 st.markdown("""
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+    --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px;
+    --accent: #3B82F6; --accent-light: #60A5FA;
+}
 * { font-family: 'Inter', sans-serif !important; }
 #MainMenu, footer, header { visibility: hidden; }
 .stApp { background: #0B1220; }
-.main .block-container { padding-top: 3rem; padding-bottom: 4rem; max-width: 700px; }
+.main .block-container { padding-top: var(--s3); padding-bottom: var(--s4); max-width: 700px; }
 .stApp, .stApp p, .stApp span, .stApp label, .stApp li { color: #e5e7eb; }
 
-/* ---------- Hero ---------- */
-.vm-hero { text-align:center; margin-bottom: 32px; }
-.vm-hero-icon { font-size:36px; }
-.vm-hero-title {
-    font-size: 44px; font-weight: 800; margin: 8px 0 6px; letter-spacing:-1.2px;
-    background: linear-gradient(90deg, #3B82F6, #60A5FA, #38BDF8);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.vm-hero-sub { font-size: 16px; color: #9CA3AF; margin-bottom: 14px; font-weight:500; }
-.vm-trust-row { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
-.vm-trust-pill {
-    background: rgba(59,130,246,0.1); color: #93C5FD; border: 1px solid rgba(59,130,246,0.25);
-    padding: 6px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
-    transition: all .2s ease;
-}
-.vm-trust-pill:hover { background: rgba(59,130,246,0.18); transform: translateY(-1px); }
+/* ---- Hero (full) ---- */
+.vm-hero { text-align:center; margin-bottom: var(--s3); }
+.vm-hero-icon { font-size:44px; margin-bottom: var(--s1); }
+.vm-hero-title { font-size: 56px; font-weight: 800; margin: 0 0 6px; letter-spacing:-1.5px; color:#FFFFFF; }
+.vm-hero-sub { font-size: 15px; color: #9CA3AF; margin-bottom: var(--s2); font-weight:500; }
+.vm-trust-row { display:flex; justify-content:center; gap:var(--s1); flex-wrap:wrap; }
+.vm-trust-pill { background: rgba(59,130,246,0.1); color: #93C5FD; border: 1px solid rgba(59,130,246,0.25); padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; }
 
-/* ---------- Disclaimer ---------- */
-.vm-disclaimer {
-    background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25);
-    color: #FCD34D; padding: 12px 18px; border-radius: 14px; font-size: 13.5px;
-    margin: 22px 0; display:flex; align-items:center; gap:10px;
-}
+/* ---- Hero (compact, after first message) ---- */
+.vm-hero-compact { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:var(--s2); padding-bottom:var(--s2); border-bottom:1px solid rgba(255,255,255,0.06); }
+.vm-hero-compact .icon { font-size:20px; }
+.vm-hero-compact .title { font-size:24px; font-weight:800; color:#fff; }
 
-/* ---------- Mic ---------- */
-.vm-mic-wrap { display:flex; flex-direction:column; align-items:center; margin: 36px 0 30px; }
-.vm-mic-glow {
-    width: 96px; height: 96px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(59,130,246,0.35) 0%, rgba(59,130,246,0.05) 70%);
-    display:flex; align-items:center; justify-content:center;
-    animation: vm-pulse 2.4s ease-in-out infinite;
-    margin-bottom: 4px;
-}
-@keyframes vm-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.25); }
-    50% { box-shadow: 0 0 0 18px rgba(59,130,246,0); }
-}
-.vm-mic-label {
-    margin-top: 14px; font-size: 13px; font-weight: 700; letter-spacing: 1.2px;
-    color: #60A5FA; text-transform: uppercase;
-}
-.vm-mic-processing {
-    margin-top: 10px; font-size: 12.5px; color: #38BDF8; font-weight:600;
-    animation: vm-blink 1.4s ease-in-out infinite;
-}
-@keyframes vm-blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+.vm-disclaimer { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); color: #FCD34D; padding: 10px 16px; border-radius: 12px; font-size: 13px; margin: var(--s2) 0; }
 
-/* audio-recorder component container */
-div[title="record-icon"], .audio-recorder { margin: 0 auto !important; }
+/* ---- Mic ---- */
+.vm-mic-wrap { display:flex; flex-direction:column; align-items:center; margin: var(--s3) 0; }
 
-/* ---------- Chat ---------- */
-.vm-user-row { display:flex; justify-content:flex-end; margin: 20px 0 10px; animation: vm-fadein .35s ease; }
-.vm-user-bubble {
-    background: linear-gradient(135deg, #1E293B, #1a2436); border: 1px solid rgba(59,130,246,0.25);
-    border-radius: 18px 18px 4px 18px; padding: 13px 18px; max-width: 78%;
-    font-size: 15px; color: #DBEAFE; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-}
-.vm-ai-row { margin: 6px 0 22px; animation: vm-fadein .45s ease; }
+.vm-processing { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:var(--s1); font-size:13px; color:#38BDF8; font-weight:600; }
+.vm-spinner-dot { width:7px; height:7px; border-radius:50%; background:#38BDF8; animation: vm-blink 1s ease-in-out infinite; }
+@keyframes vm-blink { 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+
+/* ---- Chat ---- */
+.vm-turn { animation: vm-fadein .35s ease; margin-bottom: var(--s3); }
 @keyframes vm-fadein { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+.vm-user-row { display:flex; justify-content:flex-end; margin-bottom: var(--s1); }
+.vm-user-bubble { background: linear-gradient(135deg, #1E293B, #1a2436); border: 1px solid rgba(59,130,246,0.25); border-radius: 16px 16px 4px 16px; padding: 11px 16px; max-width: 78%; font-size: 14.5px; color: #DBEAFE; }
 
-.vm-ai-card {
-    background: #111827; border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px; padding: 24px 26px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-    transition: box-shadow .25s ease;
-}
-.vm-ai-card:hover { box-shadow: 0 8px 36px rgba(59,130,246,0.12); }
-.vm-ai-card.emergency { border: 1px solid rgba(239,68,68,0.45); box-shadow: 0 0 24px rgba(239,68,68,0.15); }
-
-.vm-ai-name { font-size: 13px; font-weight: 700; color: #60A5FA; letter-spacing: 1px; margin-bottom: 12px; }
-.vm-answer-text { font-size: 15.5px; line-height: 1.7; color: #F1F5F9; margin: 4px 0 18px; }
-
-/* ---------- Badges ---------- */
-.vm-badge { display:inline-block; padding: 6px 15px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+.vm-ai-card { background: #111827; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: var(--s3); box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: box-shadow .2s ease; }
+.vm-ai-card:hover { box-shadow: 0 8px 30px rgba(59,130,246,0.1); }
+.vm-ai-card.emergency { border: 1px solid rgba(239,68,68,0.45); box-shadow: 0 0 20px rgba(239,68,68,0.12); }
+.vm-ai-header { font-size: 12.5px; font-weight: 700; color: #60A5FA; letter-spacing: 1px; margin-bottom: var(--s1); }
+.vm-badge { display:inline-block; padding: 5px 13px; border-radius: 999px; font-size: 11.5px; font-weight: 700; margin-bottom: var(--s2); }
 .vm-badge-emergency { background: rgba(239,68,68,0.12); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.35); }
 .vm-badge-verified { background: rgba(16,185,129,0.12); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.35); }
 .vm-badge-general { background: rgba(59,130,246,0.12); color: #93C5FD; border: 1px solid rgba(59,130,246,0.35); }
+.vm-answer-text { font-size: 15px; line-height: 1.65; color: #F1F5F9; margin: 0 0 var(--s2); }
+.vm-divider { height:1px; background: rgba(255,255,255,0.07); margin: var(--s2) 0; }
+.vm-sources-label { font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: 1.1px; margin-bottom: var(--s1); font-weight:700; }
+.vm-source-chip { display:inline-block; background: #1a2332; border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; padding: 5px 13px; border-radius: 999px; font-size: 11.5px; margin: 0 6px 6px 0; transition: all .18s ease; }
+.vm-source-chip:hover { border-color: #3B82F6; color: #93C5FD; transform: translateY(-1px); }
 
-/* ---------- Sources ---------- */
-.vm-sources-label { font-size: 11.5px; color: #6B7280; text-transform: uppercase; letter-spacing: 1.2px; margin: 4px 0 10px; font-weight:700; }
-.vm-source-chip {
-    display:inline-block; background: #1a2332; border: 1px solid rgba(255,255,255,0.1);
-    color: #CBD5E1; padding: 6px 14px; border-radius: 999px; font-size: 12px; margin: 0 6px 6px 0;
-    transition: all .2s ease;
+audio { width: 100%; height: 36px; border-radius: 999px; filter: invert(0.9) hue-rotate(180deg) brightness(1.1); }
+
+/* Compact icon feedback buttons */
+.vm-feedback-row { display:flex; gap: var(--s1); margin-top: var(--s2); }
+div[data-testid="column"] .stButton > button {
+    background: #1a2332 !important; color: #9CA3AF !important;
+    border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 10px !important;
+    padding: 4px 10px !important; font-size: 13px !important; min-height: 30px !important;
+    transition: all .15s ease !important;
 }
-.vm-source-chip:hover { border-color: #3B82F6; color: #93C5FD; }
-
-/* ---------- Divider ---------- */
-.vm-divider { height:1px; background: rgba(255,255,255,0.08); margin: 18px 0; }
-
-/* ---------- Audio player ---------- */
-audio { width: 100%; border-radius: 999px; height: 40px; }
-audio::-webkit-media-controls-panel { background-color: #1a2332; }
-
-/* ---------- Feedback buttons ---------- */
-.stButton > button {
-    background: #1a2332 !important; color: #CBD5E1 !important;
-    border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px !important;
-    padding: 6px 16px !important; font-size: 13px !important; font-weight:600 !important;
-    transition: all .2s ease !important;
-}
-.stButton > button:hover { border-color: #3B82F6 !important; color: #60A5FA !important; transform: translateY(-1px); }
+div[data-testid="column"] .stButton > button:hover { border-color: #3B82F6 !important; color: #60A5FA !important; transform: translateY(-1px); }
 
 .stSpinner > div { border-top-color: #3B82F6 !important; }
 </style>
@@ -164,79 +120,100 @@ def pretty_source(filename: str) -> str:
 sync_secrets_to_env()
 ensure_knowledge_base()
 
-# ---------- Hero ----------
-st.markdown('''
-<div class="vm-hero">
-    <div class="vm-hero-icon">🩺</div>
-    <div class="vm-hero-title">VoxMed AI</div>
-    <div class="vm-hero-sub">Voice-based Medical Assistant</div>
-    <div class="vm-trust-row">
-        <span class="vm-trust-pill">Trusted</span>
-        <span class="vm-trust-pill">Source Grounded</span>
-        <span class="vm-trust-pill">AI Powered</span>
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "last_audio_hash" not in st.session_state:
+    st.session_state.last_audio_hash = None
+
+has_chatted = len(st.session_state.messages) > 0
+
+if not has_chatted:
+    st.markdown('''
+    <div class="vm-hero">
+        <div class="vm-hero-icon">🩺</div>
+        <div class="vm-hero-title">VoxMed AI</div>
+        <div class="vm-hero-sub">Voice-based Medical Assistant</div>
+        <div class="vm-trust-row">
+            <span class="vm-trust-pill">Trusted</span>
+            <span class="vm-trust-pill">Source Grounded</span>
+            <span class="vm-trust-pill">AI Powered</span>
+        </div>
     </div>
-</div>
-''', unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
+    st.markdown('<div class="vm-disclaimer">⚠️ Educational demo only. Not a substitute for professional medical advice.</div>', unsafe_allow_html=True)
+else:
+    st.markdown('''
+    <div class="vm-hero-compact">
+        <span class="icon">🩺</span><span class="title">VoxMed AI</span>
+    </div>
+    ''', unsafe_allow_html=True)
 
-st.markdown('''
-<div class="vm-disclaimer">⚠️ Educational demo only. Not a substitute for professional medical advice.</div>
-''', unsafe_allow_html=True)
-
-# ---------- Mic ----------
-st.markdown('<div class="vm-mic-wrap"><div class="vm-mic-glow">', unsafe_allow_html=True)
-audio_bytes = audio_recorder(pause_threshold=2.0, icon_size="2x", recording_color="#EF4444", neutral_color="#3B82F6")
-st.markdown('</div><p class="vm-mic-label">Tap to Speak</p></div>', unsafe_allow_html=True)
+processing_placeholder = st.empty()
+st.markdown('<div class="vm-mic-wrap">', unsafe_allow_html=True)
+audio_bytes = audio_recorder(pause_threshold=2.0, icon_size="3x", recording_color="#EF4444", neutral_color="#3B82F6")
+st.markdown('<p class="vm-mic-label">🔴 Recording turns red while listening &nbsp;·&nbsp; Tap to speak</p></div>', unsafe_allow_html=True)
 
 if audio_bytes:
-    processing_placeholder = st.empty()
-    processing_placeholder.markdown('<p style="text-align:center" class="vm-mic-processing">● Processing your question...</p>', unsafe_allow_html=True)
+    audio_hash = hashlib.md5(audio_bytes).hexdigest()
+    if audio_hash != st.session_state.last_audio_hash:
+        st.session_state.last_audio_hash = audio_hash
+        processing_placeholder.markdown(
+            '<div class="vm-processing"><div class="vm-spinner-dot"></div>Processing...</div>',
+            unsafe_allow_html=True
+        )
+        query = transcribe_audio(audio_bytes)
+        processing_placeholder.empty()
 
-    query = transcribe_audio(audio_bytes)
-    processing_placeholder.empty()
-
-    if query.strip():
-        st.markdown(f'''
-        <div class="vm-user-row">
-            <div class="vm-user-bubble">{query}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-
-        with st.spinner(""):
+        if query.strip():
             result = run_pipeline(query)
-
-        card_class = "vm-ai-card emergency" if result["is_emergency"] else "vm-ai-card"
-
-        if result["is_emergency"]:
-            badge_html = '<span class="vm-badge vm-badge-emergency">⚠ Medical Emergency</span>'
-        elif result["answer_type"] == "verified":
-            badge_html = '<span class="vm-badge vm-badge-verified">✓ Verified Source</span>'
+            audio_path = text_to_speech(result["answer"])
+            st.session_state.messages.append({
+                "query": query,
+                "answer": result["answer"],
+                "sources": result["sources"],
+                "is_emergency": result["is_emergency"],
+                "answer_type": result["answer_type"],
+                "audio_path": audio_path,
+            })
+            st.rerun()
         else:
-            badge_html = '<span class="vm-badge vm-badge-general">ⓘ General Knowledge</span>'
+            st.warning("Couldn't detect any speech. Please try again.")
 
-        sources_html = ""
-        if result["sources"]:
-            chips = "".join(f'<span class="vm-source-chip">{pretty_source(s)}</span>' for s in result["sources"])
-            sources_html = f'<div class="vm-divider"></div><p class="vm-sources-label">Sources</p>{chips}'
-
-        st.markdown(f'''
-        <div class="vm-ai-row">
-            <div class="{card_class}">
-                <p class="vm-ai-name">VOXMED</p>
-                {badge_html}
-                <p class="vm-answer-text">{result["answer"]}</p>
-                {sources_html}
-            </div>
+for i, msg in enumerate(st.session_state.messages):
+    st.markdown(f'''
+    <div class="vm-turn">
+        <div class="vm-user-row">
+            <div class="vm-user-bubble">{msg["query"]}</div>
         </div>
-        ''', unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
 
-        audio_path = text_to_speech(result["answer"])
-        st.markdown('<p class="vm-sources-label" style="margin-top:18px">🔊 Listen</p>', unsafe_allow_html=True)
-        st.audio(audio_path, format="audio/mp3")
-
-        col1, col2, _ = st.columns([1, 1, 3])
-        with col1:
-            st.button("👍 Helpful", key="helpful_btn")
-        with col2:
-            st.button("👎 Not helpful", key="not_helpful_btn")
+    card_class = "vm-ai-card emergency" if msg["is_emergency"] else "vm-ai-card"
+    if msg["is_emergency"]:
+        badge_html = '<span class="vm-badge vm-badge-emergency">⚠ Medical Emergency</span>'
+    elif msg["answer_type"] == "verified":
+        badge_html = '<span class="vm-badge vm-badge-verified">✓ Verified Source</span>'
     else:
-        st.warning("Couldn't detect any speech. Please try again.")
+        badge_html = '<span class="vm-badge vm-badge-general">ⓘ General Knowledge</span>'
+
+    sources_html = ""
+    if msg["sources"]:
+        chips = "".join(f'<span class="vm-source-chip">{pretty_source(s)}</span>' for s in msg["sources"])
+        sources_html = f'<div class="vm-divider"></div><p class="vm-sources-label">Sources</p>{chips}'
+
+    st.markdown(f'''
+        <div class="{card_class}">
+            <p class="vm-ai-header">VOXMED</p>
+            {badge_html}
+            <p class="vm-answer-text">{msg["answer"]}</p>
+            {sources_html}
+            <div class="vm-divider"></div>
+            <p class="vm-sources-label">Listen</p>
+    ''', unsafe_allow_html=True)
+    st.audio(msg["audio_path"], format="audio/mp3")
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+    col1, col2, _ = st.columns([0.6, 0.6, 4])
+    with col1:
+        st.button("👍", key=f"up_{i}")
+    with col2:
+        st.button("👎", key=f"down_{i}")
