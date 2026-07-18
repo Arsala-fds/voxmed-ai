@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "rag"))
 from retriever import retrieve
 
 
-def get_context(intake_result: dict, k: int = 3) -> dict:
+def get_context(intake_result: dict, k: int = 5) -> dict:
     """
     Takes the Intake Agent's output dict, retrieves relevant chunks,
     and returns a dict ready for the Reasoning Agent.

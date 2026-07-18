@@ -1,52 +1,17 @@
 [
-    {
-      "query": "what should i do for a burn",
-      "expected_source": "burns.txt",
-      "expected_emergency": false
-    },
-    {
-      "query": "how do i treat a nosebleed",
-      "expected_source": "nosebleeds.txt",
-      "expected_emergency": false
-    },
-    {
-      "query": "someone is choking and can't breathe",
-      "expected_source": "choking.txt",
-      "expected_emergency": true
-    },
-    {
-      "query": "i have a fever, what should i do",
-      "expected_source": "fever.txt",
-      "expected_emergency": false
-    },
-    {
-      "query": "i have severe chest pain and difficulty breathing",
-      "expected_source": "first_aid_steps.txt",
-      "expected_emergency": true
-    },
-    {
-      "query": "how to treat a sprained ankle",
-      "expected_source": "sprains_and_strains.txt",
-      "expected_emergency": false
-    },
-    {
-      "query": "i think i'm having a severe allergic reaction and my throat is swelling",
-      "expected_source": "allergic_reaction.txt",
-      "expected_emergency": true
-    },
-    {
-      "query": "what's the best treatment for a small cut",
-      "expected_source": "wounds_and_injuries.txt",
-      "expected_emergency": false
-    },
-    {
-      "query": "someone is unconscious and not responding",
-      "expected_source": "first_aid.txt",
-      "expected_emergency": true
-    },
-    {
-      "query": "what should i eat to lose weight",
-      "expected_source": null,
-      "expected_emergency": false
-    }
+    {"query": "what should i do for a burn", "expected_source": "burns.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "how do i treat a nosebleed", "expected_source": "nosebleeds.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "someone is choking and can't breathe", "expected_source": "choking.txt", "expected_emergency": true, "expected_answer_type": "verified"},
+    {"query": "i have a fever, what should i do", "expected_source": "fever.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "i have severe chest pain and difficulty breathing", "expected_source": "first_aid_steps.txt", "expected_emergency": true, "expected_answer_type": "verified"},
+    {"query": "how to treat a sprained ankle", "expected_source": "sprains_and_strains.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "i think i'm having a severe allergic reaction and my throat is swelling", "expected_source": "allergic_reaction.txt", "expected_emergency": true, "expected_answer_type": "verified"},
+    {"query": "what's the best treatment for a small cut", "expected_source": "wounds_and_injuries.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "someone is unconscious and not responding", "expected_source": "first_aid.txt", "expected_emergency": true, "expected_answer_type": "verified"},
+    {"query": "how do i manage my diabetes", "expected_source": "diabetes.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "what causes migraines and how do i treat one", "expected_source": "migraine.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "what are the symptoms of a urinary tract infection", "expected_source": "urinary_tract_infections.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "i think i'm having a heart attack", "expected_source": "heart_attack.txt", "expected_emergency": true, "expected_answer_type": "verified"},
+    {"query": "how do i treat seasonal flu at home", "expected_source": "flu.txt", "expected_emergency": false, "expected_answer_type": "verified"},
+    {"query": "what should i eat to lose weight", "expected_source": null, "expected_emergency": false, "expected_answer_type": "general"}
   ]

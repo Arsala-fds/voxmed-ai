@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DISTANCE_THRESHOLD = 1.0  # above this, retrieved context is considered irrelevant
+DISTANCE_THRESHOLD = 1.15  # above this, retrieved context is considered irrelevant
 
 GROUNDED_SYSTEM_PROMPT = """You are VoxMed, a careful medical information assistant.
 Answer ONLY using the provided context below. If the context does not
