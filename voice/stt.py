@@ -29,7 +29,7 @@ def transcribe_audio(audio_bytes: bytes) -> str:
     """
     model = get_model()
 
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
         tmp.write(audio_bytes)
         tmp_path = tmp.name
 

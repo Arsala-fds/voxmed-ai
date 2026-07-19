@@ -37,11 +37,15 @@ def get_client():
     return Groq(api_key=api_key)
 
 
-def generate_answer(retrieval_result: dict) -> dict:
+def generate_answer(retrieval_result: dict, conversation_history: list = None) -> dict:
     """
     Takes the Retrieval Agent's output dict, generates an answer, and
     tags it as 'verified' (grounded in retrieved docs) or 'general'
     (LLM's own knowledge, used only when no relevant doc was found).
+
+    conversation_history: optional list of {"query": ..., "answer": ...}
+    dicts from earlier turns, used so follow-up questions ("what about
+    ibuprofen instead?") are understood in context.
     """
     client = get_client()
 
@@ -63,13 +67,20 @@ def generate_answer(retrieval_result: dict) -> dict:
         system_prompt = GENERAL_KNOWLEDGE_SYSTEM_PROMPT
         answer_type = "general"
 
+    messages = [{"role": "system", "content": system_prompt}]
+
+    # include recent turns (last 3) so follow-up questions have context
+    if conversation_history:
+        for turn in conversation_history[-3:]:
+            messages.append({"role": "user", "content": turn["query"]})
+            messages.append({"role": "assistant", "content": turn["answer"]})
+
+    messages.append({"role": "user", "content": user_message})
+
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         max_tokens=300,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
+        messages=messages,
     )
 
     answer = response.choices[0].message.content
@@ -79,19 +90,3 @@ def generate_answer(retrieval_result: dict) -> dict:
         "answer": answer,
         "answer_type": answer_type,  # "verified" or "general"
     }
-
-
-if __name__ == "__main__":
-    from intake_agent import process_query
-    from retrieval_agent import get_context
-
-    test_query = "what should i do for a burn"
-    intake_result = process_query(test_query)
-    retrieval_result = get_context(intake_result)
-    final_result = generate_answer(retrieval_result)
-
-    print("Query:", final_result["cleaned_query"])
-    print("Answer type:", final_result["answer_type"])
-    print("Sources:", final_result["sources"])
-    print("\nAnswer:")
-    print(final_result["answer"])

@@ -11,7 +11,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "voice"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "agents"))
 
 import streamlit as st
-from audio_recorder_streamlit import audio_recorder
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "voice", "mic_component"))
+from mic_component import voxmed_mic
 
 from stt import transcribe_audio
 from tts import text_to_speech
@@ -148,10 +149,8 @@ else:
     </div>
     ''', unsafe_allow_html=True)
 
+audio_bytes = voxmed_mic(key="mic")
 processing_placeholder = st.empty()
-st.markdown('<div class="vm-mic-wrap">', unsafe_allow_html=True)
-audio_bytes = audio_recorder(pause_threshold=2.0, icon_size="3x", recording_color="#EF4444", neutral_color="#3B82F6")
-st.markdown('<p class="vm-mic-label">🔴 Recording turns red while listening &nbsp;·&nbsp; Tap to speak</p></div>', unsafe_allow_html=True)
 
 if audio_bytes:
     audio_hash = hashlib.md5(audio_bytes).hexdigest()
@@ -165,7 +164,7 @@ if audio_bytes:
         processing_placeholder.empty()
 
         if query.strip():
-            result = run_pipeline(query)
+            result = run_pipeline(query, conversation_history=st.session_state.messages)
             audio_path = text_to_speech(result["answer"])
             st.session_state.messages.append({
                 "query": query,
