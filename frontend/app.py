@@ -29,15 +29,19 @@ st.markdown("""
 }
 * { font-family: 'Inter', sans-serif !important; }
 #MainMenu, footer, header { visibility: hidden; }
-.stApp { background: #0B1220; }
+.stApp { background: #0A0F1C; }
 .main .block-container { padding-top: var(--s3); padding-bottom: var(--s4); max-width: 700px; }
 .stApp, .stApp p, .stApp span, .stApp label, .stApp li { color: #e5e7eb; }
 
 /* ---- Hero (full) ---- */
 .vm-hero { text-align:center; margin-bottom: var(--s3); }
 .vm-hero-icon { font-size:44px; margin-bottom: var(--s1); }
-.vm-hero-title { font-size: 56px; font-weight: 800; margin: 0 0 6px; letter-spacing:-1.5px; color:#FFFFFF; }
-.vm-hero-sub { font-size: 15px; color: #9CA3AF; margin-bottom: var(--s2); font-weight:500; }
+.vm-hero-title {
+    font-size: 56px; font-weight: 800; margin: 0 0 8px; letter-spacing:-1.5px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #C7D2FE 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.vm-hero-sub { font-size: 15px; color: #8B93A7; margin-bottom: var(--s2); font-weight:500; letter-spacing: 0.2px; }
 .vm-trust-row { display:flex; justify-content:center; gap:var(--s1); flex-wrap:wrap; }
 .vm-trust-pill { background: rgba(59,130,246,0.1); color: #93C5FD; border: 1px solid rgba(59,130,246,0.25); padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; }
 
@@ -59,21 +63,70 @@ st.markdown("""
 .vm-turn { animation: vm-fadein .35s ease; margin-bottom: var(--s3); }
 @keyframes vm-fadein { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 .vm-user-row { display:flex; justify-content:flex-end; margin-bottom: var(--s1); }
-.vm-user-bubble { background: linear-gradient(135deg, #1E293B, #1a2436); border: 1px solid rgba(59,130,246,0.25); border-radius: 16px 16px 4px 16px; padding: 11px 16px; max-width: 78%; font-size: 14.5px; color: #DBEAFE; }
+.vm-user-bubble { background: linear-gradient(135deg, #202C42, #182338); border: 1px solid rgba(59,130,246,0.28); border-radius: 16px 16px 4px 16px; padding: 11px 16px; max-width: 78%; font-size: 14.5px; color: #DBEAFE; letter-spacing: 0.1px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
 
-.vm-ai-card { background: #111827; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: var(--s3); box-shadow: 0 6px 24px rgba(0,0,0,0.3); transition: box-shadow .2s ease; }
-.vm-ai-card:hover { box-shadow: 0 8px 30px rgba(59,130,246,0.1); }
-.vm-ai-card.emergency { border: 1px solid rgba(239,68,68,0.45); box-shadow: 0 0 20px rgba(239,68,68,0.12); }
-.vm-ai-header { font-size: 12.5px; font-weight: 700; color: #60A5FA; letter-spacing: 1px; margin-bottom: var(--s1); }
+.vm-ai-card {
+    background: linear-gradient(180deg, #141b2c 0%, #0f1420 100%);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: var(--s3);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: box-shadow .2s ease;
+}
+.vm-ai-card:hover { box-shadow: 0 10px 34px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+.vm-ai-card.emergency { border: 1px solid rgba(239,68,68,0.45); box-shadow: 0 0 20px rgba(239,68,68,0.12), inset 0 1px 0 rgba(255,255,255,0.05); }
+.vm-ai-header { font-size: 12px; font-weight: 700; color: #7C9CF0; letter-spacing: 1.4px; margin-bottom: var(--s1); }
 .vm-badge { display:inline-block; padding: 5px 13px; border-radius: 999px; font-size: 11.5px; font-weight: 700; margin-bottom: var(--s2); }
 .vm-badge-emergency { background: rgba(239,68,68,0.12); color: #FCA5A5; border: 1px solid rgba(239,68,68,0.35); }
 .vm-badge-verified { background: rgba(16,185,129,0.12); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.35); }
 .vm-badge-general { background: rgba(59,130,246,0.12); color: #93C5FD; border: 1px solid rgba(59,130,246,0.35); }
-.vm-answer-text { font-size: 15px; line-height: 1.65; color: #F1F5F9; margin: 0 0 var(--s2); }
+.vm-answer-text { font-size: 15.5px; line-height: 1.75; color: #F4F6F8; margin: 0 0 var(--s2); letter-spacing: 0.1px; }
 .vm-divider { height:1px; background: rgba(255,255,255,0.07); margin: var(--s2) 0; }
-.vm-sources-label { font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: 1.1px; margin-bottom: var(--s1); font-weight:700; }
-.vm-source-chip { display:inline-block; background: #1a2332; border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; padding: 5px 13px; border-radius: 999px; font-size: 11.5px; margin: 0 6px 6px 0; transition: all .18s ease; }
-.vm-source-chip:hover { border-color: #3B82F6; color: #93C5FD; transform: translateY(-1px); }
+.vm-sources-label { font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: 1.1px; margin-bottom: 0; font-weight:700; }
+.vm-sources-toggle { display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; width:fit-content; }
+.vm-sources-arrow {
+    display:flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:5px; font-size:9px; color:#6B7280;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    transition: transform .25s ease, color .25s ease, background .25s ease;
+}
+.vm-sources-wrap:hover .vm-sources-arrow { transform: rotate(180deg); color:#93C5FD; background: rgba(59,130,246,0.12); }
+.vm-sources-content {
+    max-height:0; opacity:0; overflow:hidden; margin-top:0;
+    transition: max-height 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s ease, margin-top 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vm-sources-wrap:hover .vm-sources-content { max-height:400px; opacity:1; margin-top:10px; overflow:visible; transition-delay: 0.15s; }
+.vm-source-chip {
+    display:inline-flex; align-items:center; gap:7px;
+    background: #141b2b; border: 1px solid rgba(255,255,255,0.08);
+    color: #CBD5E1; padding: 6px 12px 6px 8px; border-radius: 10px;
+    font-size: 12px; margin: 0 8px 8px 0; position: relative; cursor: default;
+    transition: all .18s ease;
+}
+.vm-source-chip:hover { border-color: rgba(59,130,246,0.35); background: #182338; transform: translateY(-1px); }
+.vm-source-icon {
+    width:18px; height:18px; border-radius:6px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:10.5px;
+}
+.vm-source-icon.official { background: rgba(16,185,129,0.15); color:#34D399; }
+.vm-source-icon.curated { background: rgba(59,130,246,0.15); color:#60A5FA; }
+.vm-source-name { font-weight:600; color:#E5E7EB; }
+.vm-source-tier {
+    font-size:9px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
+    padding:2px 6px; border-radius:5px; margin-left:2px;
+}
+.vm-source-tier.official { background: rgba(16,185,129,0.12); color:#6EE7B7; }
+.vm-source-tier.curated { background: rgba(59,130,246,0.12); color:#93C5FD; }
+.vm-source-chip[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position:absolute; bottom:calc(100% + 9px); left:50%; transform:translateX(-50%);
+    background:#1f2937; color:#E5E7EB; padding:7px 11px; border-radius:8px;
+    font-size:11px; font-weight:500; white-space:nowrap; max-width:260px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.1);
+    z-index:20; pointer-events:none;
+}
+.vm-source-chip[data-tooltip]:hover::before {
+    content:''; position:absolute; bottom:calc(100% + 3px); left:50%; transform:translateX(-50%);
+    border:5px solid transparent; border-top-color:#1f2937; z-index:20; pointer-events:none;
+}
 
 audio { width: 100%; height: 36px; border-radius: 999px; filter: invert(0.9) hue-rotate(180deg) brightness(1.1); }
 
@@ -111,11 +164,27 @@ def ensure_knowledge_base():
             ingest.main()
 
 
-def pretty_source(filename: str) -> str:
+def get_source_meta(filename: str) -> dict:
+    """
+    Classifies a source file into a credibility tier so the UI can show
+    *why* it's trustworthy, not just its name.
+    """
     name = filename.replace(".txt", "").replace("_", " ").title()
     if "first aid steps" in name.lower():
-        return "Curated First-Aid Reference"
-    return f"MedlinePlus · {name}"
+        return {
+            "label": "Curated First-Aid Reference",
+            "icon": "✚",
+            "tier_class": "curated",
+            "tier_label": "Curated",
+            "tooltip": "Reviewed first-aid reference compiled for this assistant",
+        }
+    return {
+        "label": f"MedlinePlus · {name}",
+        "icon": "🏛",
+        "tier_class": "official",
+        "tier_label": "Official",
+        "tooltip": "U.S. National Library of Medicine (NIH) — government health resource",
+    }
 
 
 sync_secrets_to_env()
@@ -129,25 +198,23 @@ if "last_audio_hash" not in st.session_state:
 has_chatted = len(st.session_state.messages) > 0
 
 if not has_chatted:
-    st.markdown('''
-    <div class="vm-hero">
-        <div class="vm-hero-icon">🩺</div>
-        <div class="vm-hero-title">VoxMed AI</div>
-        <div class="vm-hero-sub">Voice-based Medical Assistant</div>
-        <div class="vm-trust-row">
-            <span class="vm-trust-pill">Trusted</span>
-            <span class="vm-trust-pill">Source Grounded</span>
-            <span class="vm-trust-pill">AI Powered</span>
-        </div>
-    </div>
-    ''', unsafe_allow_html=True)
+    st.markdown(
+"""<div class="vm-hero">
+<div class="vm-hero-icon">🩺</div>
+<div class="vm-hero-title">VoxMed AI</div>
+<div class="vm-hero-sub">Trusted AI Medical Assistant</div>
+<div class="vm-trust-row">
+<span class="vm-trust-pill">🛡 Trusted</span>
+<span class="vm-trust-pill">📚 Grounded Sources</span>
+<span class="vm-trust-pill">🤖 AI Powered</span>
+</div>
+</div>""", unsafe_allow_html=True)
     st.markdown('<div class="vm-disclaimer">⚠️ Educational demo only. Not a substitute for professional medical advice.</div>', unsafe_allow_html=True)
 else:
-    st.markdown('''
-    <div class="vm-hero-compact">
-        <span class="icon">🩺</span><span class="title">VoxMed AI</span>
-    </div>
-    ''', unsafe_allow_html=True)
+    st.markdown(
+'''<div class="vm-hero-compact">
+<span class="icon">🩺</span><span class="title">VoxMed AI</span>
+</div>''', unsafe_allow_html=True)
 
 audio_bytes = voxmed_mic(key="mic")
 processing_placeholder = st.empty()
@@ -179,12 +246,11 @@ if audio_bytes:
             st.warning("Couldn't detect any speech. Please try again.")
 
 for i, msg in enumerate(st.session_state.messages):
-    st.markdown(f'''
-    <div class="vm-turn">
-        <div class="vm-user-row">
-            <div class="vm-user-bubble">{msg["query"]}</div>
-        </div>
-    ''', unsafe_allow_html=True)
+    st.markdown(
+f'''<div class="vm-turn">
+<div class="vm-user-row">
+<div class="vm-user-bubble">{msg["query"]}</div>
+</div>''', unsafe_allow_html=True)
 
     card_class = "vm-ai-card emergency" if msg["is_emergency"] else "vm-ai-card"
     if msg["is_emergency"]:
@@ -196,18 +262,36 @@ for i, msg in enumerate(st.session_state.messages):
 
     sources_html = ""
     if msg["sources"]:
-        chips = "".join(f'<span class="vm-source-chip">{pretty_source(s)}</span>' for s in msg["sources"])
-        sources_html = f'<div class="vm-divider"></div><p class="vm-sources-label">Sources</p>{chips}'
+        chip_parts = []
+        for s in msg["sources"]:
+            meta = get_source_meta(s)
+            chip_parts.append(
+                f'<span class="vm-source-chip" data-tooltip="{meta["tooltip"]}">'
+                f'<span class="vm-source-icon {meta["tier_class"]}">{meta["icon"]}</span>'
+                f'<span class="vm-source-name">{meta["label"]}</span>'
+                f'<span class="vm-source-tier {meta["tier_class"]}">{meta["tier_label"]}</span>'
+                f'</span>'
+            )
+        chips = "".join(chip_parts)
+        sources_html = (
+            '<div class="vm-divider"></div>'
+            '<div class="vm-sources-wrap">'
+            '<div class="vm-sources-toggle">'
+            '<p class="vm-sources-label">Sources</p>'
+            '<span class="vm-sources-arrow">▾</span>'
+            '</div>'
+            f'<div class="vm-sources-content">{chips}</div>'
+            '</div>'
+        )
 
-    st.markdown(f'''
-        <div class="{card_class}">
-            <p class="vm-ai-header">VOXMED</p>
-            {badge_html}
-            <p class="vm-answer-text">{msg["answer"]}</p>
-            {sources_html}
-            <div class="vm-divider"></div>
-            <p class="vm-sources-label">Listen</p>
-    ''', unsafe_allow_html=True)
+    st.markdown(
+f'''<div class="{card_class}">
+<p class="vm-ai-header">VOXMED</p>
+{badge_html}
+<p class="vm-answer-text">{msg["answer"]}</p>
+{sources_html}
+<div class="vm-divider"></div>
+<p class="vm-sources-label">Listen</p>''', unsafe_allow_html=True)
     st.audio(msg["audio_path"], format="audio/mp3")
     st.markdown('</div></div>', unsafe_allow_html=True)
 
